@@ -21,8 +21,8 @@ El usuario es un **viajero** (una pareja, una familia o alguien que viaja por tr
 **Compartidos:** `Icon`, `Navbar` (`Logo`, `SearchBar` + `SearchSection`, `UserMenu`), `MobileTabBar`, `Footer`, `ListingCard` (`ListingPhoto` + `FavoriteButton`, `StarRating`), `ListingGrid`, `ListingSkeleton`, `LoadingSpinner`.
 
 - **Home:** `Navbar` con `SearchBar` → `CategoryBar` (`CategoryButton` × N) → `ListingSkeleton` mientras carga → `ListingGrid` (`ListingCard` × N) → `Footer` / `MobileTabBar`.
-- **Catálogo:** `Navbar` → `ResultsHeader` (`SortSelect`) → `ListingGrid` (reutiliza `ListingCard`) → `MapPlaceholder` → `MobileTabBar`.
-- **Detalle:** `Navbar` → `BackLink` → `RoomView` (carga de datos) → `RoomDetails`, que agrupa `ListingHeader`, `PhotoGallery` (`GalleryThumbnails`), `RoomSummary`, `HostInfo`, `RoomHighlights`, `AmenitiesGrid` y `BookingCard` (`GuestCounter`).
+- **Catálogo:** `Navbar` → `ResultsHeader` (`SortSelect`) → `ListingGrid` (reutiliza `ListingCard`) → `ListingsMap` (`MapPopupCard`), con `MapPlaceholder` mientras carga → `MobileTabBar`.
+- **Detalle:** `Navbar` → `BackLink` → `RoomView` (carga de datos) → `RoomDetails`, que agrupa `ListingHeader`, `PhotoGallery` (`GalleryThumbnails`), `RoomSummary`, `HostInfo`, `RoomHighlights`, `AmenitiesGrid` y `BookingCard` (`DateRangeFields`, `StayCalendar`, `GuestCounter`, `PriceBreakdown`).
 
 ## 4. Flujo de visión → especificación
 
@@ -63,9 +63,11 @@ Lo que se ve en la captura: arriba, la flecha atrás, la píldora "Alojamientos 
 | `ResultsHeader` | `count: number`, `sortOrder: SortOrder`, `onSortChange` | Centrado en móvil (contador encima del selector); en escritorio, en una fila con `justify-between`. |
 | `SortSelect` | `value: SortOrder`, `onChange` | Píldora con icono de filtros y un `<select>`: precio de menor a mayor (ascendente) o de mayor a menor (descendente). |
 | `ListingGrid` / `ListingCard` | (los mismos de la Home) | 1 columna en móvil, 2–3 en escritorio. |
-| `MapPlaceholder` | — | Recuadro gris con el texto "Mapa". **Debajo** de la lista en móvil; **columna derecha** *sticky* en escritorio (lista ≈60 %, mapa ≈40 %). |
+| `MapPlaceholder` | — | Recuadro gris con el texto "Mapa". Se muestra mientras cargan los datos y el mapa. |
+| `ListingsMap` | `listings: Listing[]` | **Reto opcional.** Mapa interactivo (Leaflet + OpenStreetMap) con un pin-píldora de precio por alojamiento, colocado según sus coordenadas. **Debajo** de la lista en móvil; **columna derecha** *sticky* en escritorio (lista ≈60 %, mapa ≈40 %). |
+| `MapPopupCard` | `listing: Listing` | Mini-tarjeta del pin (foto, tipo, ★, precio) que enlaza al detalle. |
 
-*Decisión:* en Airbnb móvil el mapa queda por detrás de la lista. Aquí seguimos el brief y lo colocamos debajo de las tarjetas.
+*Decisión:* en Airbnb móvil el mapa queda por detrás de la lista. Aquí seguimos el brief y lo colocamos debajo de las tarjetas. Leaflet necesita `window`, así que el mapa se importa con `next/dynamic` y `ssr: false`.
 
 ### 4.3 Detalle (`/rooms/[id]`) — captura móvil
 
@@ -83,13 +85,16 @@ Lo que se ve en la captura: una foto a ancho completo con un contador "1 / 83" a
 | `HostInfo` | `host: Host` | Avatar redondo (con medalla si es Superanfitrión) + "Anfitrión: Nombre" + años como anfitrión. |
 | `RoomHighlights` | `hostName: string` | Tres puntos destacados de icono + título + texto (llegada autónoma, zona de trabajo, cancelación). |
 | `AmenitiesGrid` | `amenities: Amenity[]` | Título y cuadrícula de icono + etiqueta: 1 columna en móvil, 2 en escritorio. |
-| `BookingCard` | `pricePerNight: number`, `maxGuests: number` | Tarjeta con sombra: precio, casillas Llegada / Salida, `GuestCounter` y CTA "Reservar" con degradado rosa. *Sticky* en escritorio. |
+| `BookingCard` | `pricePerNight: number`, `maxGuests: number` | Tarjeta con sombra: precio, fechas, `GuestCounter`, CTA con degradado rosa ("Comprobar disponibilidad" → "Reservar") y desglose. *Sticky* en escritorio. |
+| `DateRangeFields` | `range`, `isOpen`, `onToggle` | **Reto opcional.** Casillas LLEGADA / SALIDA que abren y cierran el calendario. |
+| `StayCalendar` | `selected`, `onSelect` | **Reto opcional.** Calendario de rango (react-day-picker) en español, sin días pasados. |
+| `PriceBreakdown` | `pricePerNight`, `nights` | **Reto opcional.** "95 € x 3 noches · 285 €" y el total. |
 | `GuestCounter` | `value`, `min`, `max`, `onChange` | Botones − / + que se desactivan al llegar al mínimo o al máximo. |
 
 ## 5. Datos y tipos
 
 Los tipos están en `types/listing.ts`: `Category`, `Listing` (alojamiento), `Room` (habitación, que extiende `Listing`), `Host`, `Amenity` y `SortOrder`.
-Los datos simulados están en `lib/data.ts`. Las fotos son de [Unsplash](https://unsplash.com) (licencia gratuita) y se cargan con `next/image`; los iconos de línea se basan en el set abierto Lucide (ISC). Las páginas simulan una API con `useEffect` y `setTimeout` (1 s) y muestran un indicador de carga mientras tanto.
+Los datos simulados están en `lib/data.ts`. Las fotos son de [Unsplash](https://unsplash.com) (licencia gratuita) y se cargan con `next/image`; los iconos de línea se basan en el set abierto Lucide (ISC). Las páginas simulan una API con `useEffect` y `setTimeout` (1 s) y muestran un indicador de carga mientras tanto. Las utilidades de la reserva (noches entre fechas, formato de fechas y euros) están en `lib/booking.ts`, con date-fns.
 
 ## 6. Reglas que seguimos
 

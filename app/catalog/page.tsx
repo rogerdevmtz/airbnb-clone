@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
 import Footer from "@/components/Footer";
 import ListingGrid from "@/components/ListingGrid";
 import ListingSkeleton from "@/components/ListingSkeleton";
@@ -14,7 +15,14 @@ import type { Listing, SortOrder } from "@/types/listing";
 
 const catalogColumns = "sm:grid-cols-2 xl:grid-cols-3";
 
-// Página de catálogo (/catalog): ResultsHeader + ListingGrid + MapPlaceholder.
+// Leaflet necesita `window`, así que el mapa se carga solo en el navegador.
+// Mientras tanto (y mientras llegan los datos) se ve el MapPlaceholder.
+const ListingsMap = dynamic(() => import("@/components/ListingsMap"), {
+  ssr: false,
+  loading: () => <MapPlaceholder />,
+});
+
+// Página de catálogo (/catalog): ResultsHeader + ListingGrid + mapa interactivo.
 const CatalogPage = () => {
   const [listings, setListings] = useState<Listing[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -46,7 +54,7 @@ const CatalogPage = () => {
           )}
         </section>
         <section className="md:w-[42%] md:pt-5" aria-label="Mapa de resultados">
-          <MapPlaceholder />
+          {isLoading ? <MapPlaceholder /> : <ListingsMap listings={sortedListings} />}
         </section>
       </main>
       <Footer />
