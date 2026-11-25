@@ -1,4 +1,5 @@
 import BackLink from "@/components/BackLink";
+import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import RoomView from "@/components/RoomView";
 import { listings } from "@/lib/data";
@@ -13,12 +14,13 @@ const RoomPage = async ({ params }: PageProps<"/rooms/[id]">) => {
   return (
     <>
       <Navbar />
-      <main className="mx-auto w-full max-w-6xl pb-16 md:px-8">
-        <div className="px-4 py-3 md:px-0">
+      <main className="mx-auto w-full max-w-[1120px] pb-16 md:px-10">
+        <div className="px-6 py-3 md:px-0">
           <BackLink href="/catalog" label="Volver al catálogo" />
         </div>
         <RoomView roomId={id} />
       </main>
+      <Footer />
     </>
   );
 };

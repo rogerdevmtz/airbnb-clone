@@ -31,7 +31,11 @@ lib/            datos simulados y constantes
 context.md      brief + especificaciones de componentes
 ```
 
+## Diseño
+
+Réplica visual de Airbnb: buscador en píldora (Dónde · Cuándo · Quién), categorías con iconos de línea, tarjetas con foto, corazón de favorito y etiqueta "Favorito entre huéspedes", carga con *skeletons*, y en el detalle la galería en cuadrícula y la tarjeta de reserva *sticky*. Fotos de [Unsplash](https://unsplash.com).
+
 ## Hooks de React usados
 
-- `useState`: texto del buscador, categoría activa, orden de los resultados, índice de la galería y número de huéspedes.
+- `useState`: texto del buscador, categoría activa, orden de los resultados, índice de la galería, número de huéspedes y favoritos.
 - `useEffect`: carga simulada de datos (con `setTimeout`) en la Home, el Catálogo y el Detalle, con un indicador de carga.

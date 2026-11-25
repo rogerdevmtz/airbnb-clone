@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Icon from "@/components/Icon";
 
 // Spec: BackLink — props: href, label. Botón "←" para volver atrás.
 interface BackLinkProps {
@@ -12,7 +13,7 @@ const BackLink = ({ href, label }: BackLinkProps) => {
       href={href}
       className="inline-flex items-center gap-2 rounded-full px-3 py-2 text-sm font-semibold hover:bg-gray-100"
     >
-      <span aria-hidden="true">←</span>
+      <Icon name="chevronLeft" className="h-4 w-4" />
       {label}
     </Link>
   );

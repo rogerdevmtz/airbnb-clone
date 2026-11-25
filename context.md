@@ -18,11 +18,11 @@ El usuario es un **viajero** (una pareja, una familia o alguien que viaja por tr
 
 ## 3. Componentes principales por vista
 
-**Compartidos:** `Navbar` (`Logo`, `SearchBar`, `UserMenu`), `MobileTabBar`, `ListingCard` (`PhotoPlaceholder`, `StarRating`), `ListingGrid`, `LoadingSpinner`.
+**Compartidos:** `Icon`, `Navbar` (`Logo`, `SearchBar` + `SearchSection`, `UserMenu`), `MobileTabBar`, `Footer`, `ListingCard` (`ListingPhoto` + `FavoriteButton`, `StarRating`), `ListingGrid`, `ListingSkeleton`, `LoadingSpinner`.
 
-- **Home:** `Navbar` con `SearchBar` → `CategoryBar` (`CategoryButton` × N) → `ListingGrid` (`ListingCard` × N) → `MobileTabBar`.
+- **Home:** `Navbar` con `SearchBar` → `CategoryBar` (`CategoryButton` × N) → `ListingSkeleton` mientras carga → `ListingGrid` (`ListingCard` × N) → `Footer` / `MobileTabBar`.
 - **Catálogo:** `Navbar` → `ResultsHeader` (`SortSelect`) → `ListingGrid` (reutiliza `ListingCard`) → `MapPlaceholder` → `MobileTabBar`.
-- **Detalle:** `Navbar` → `BackLink` → `RoomView` (carga de datos) → `RoomDetails`, que agrupa `PhotoGallery`, `ListingHeader`, `HostInfo`, `AmenitiesGrid` y `BookingCard` (`GuestCounter`).
+- **Detalle:** `Navbar` → `BackLink` → `RoomView` (carga de datos) → `RoomDetails`, que agrupa `ListingHeader`, `PhotoGallery` (`GalleryThumbnails`), `RoomSummary`, `HostInfo`, `RoomHighlights`, `AmenitiesGrid` y `BookingCard` (`GuestCounter`).
 
 ## 4. Flujo de visión → especificación
 
@@ -40,13 +40,19 @@ Lo que se ve en la captura: una píldora de búsqueda "Empieza a buscar" con som
 | --- | --- | --- |
 | `Navbar` | `searchValue?: string`, `onSearchChange?: (v: string) => void` | Cabecera *sticky* arriba. Fila: `Logo` · `SearchBar` (ancho completo en móvil) · `UserMenu` (solo escritorio). |
 | `Logo` | — | Izquierda. En móvil solo el icono; a partir de `md` se añade el texto "airbnb". |
-| `SearchBar` | `value: string`, `onChange: (v: string) => void` | Píldora redondeada con sombra e icono de lupa. |
-| `UserMenu` | — | Derecha, oculto en móvil (`hidden md:flex`). |
-| `CategoryBar` | `categories: Category[]`, `activeId: string`, `onSelect: (id) => void` | Debajo de la Navbar. Fila horizontal con scroll y sin barra visible. |
-| `CategoryButton` | `category: Category`, `isActive: boolean`, `onSelect` | Icono encima de la etiqueta; la activa con texto oscuro y borde inferior. |
-| `ListingGrid` | `listings: Listing[]`, `columnsClass?: string` | 1 columna en móvil → 3 en `md` → 4 en `lg`. |
-| `ListingCard` | `listing: Listing` | Foto cuadrada redondeada; debajo, título + ★ en la misma fila, la ubicación en gris y "XX € noche". Toda la tarjeta es un `<Link>`. |
+| `SearchBar` | `value: string`, `onChange: (v: string) => void` | Píldora redondeada con sombra. Móvil: lupa + "Empieza a buscar". Escritorio: secciones Dónde · Cuándo · Quién y botón rosa redondo con la lupa. |
+| `SearchSection` | `label: string`, `value: string` | Bloque "Cuándo / Añade fechas" del buscador de escritorio, separado por una línea vertical. |
+| `UserMenu` | — | Derecha, oculto en móvil: "Hazte anfitrión", globo y píldora con menú + avatar. |
+| `CategoryBar` | `categories: Category[]`, `activeId: string`, `onSelect: (id) => void` | Debajo de la Navbar (*sticky*). Fila horizontal con scroll y sin barra visible + botón "Filtros" en escritorio. |
+| `CategoryButton` | `category: Category`, `isActive: boolean`, `onSelect` | Icono de línea encima de la etiqueta; inactiva en gris, la activa en negro con borde inferior. |
+| `Icon` | `name: IconName`, `className?`, `filled?` | SVG de línea (24×24). Los trazados están en `lib/icons.ts`. |
+| `ListingGrid` | `listings: Listing[]`, `columnsClass?: string` | 1 columna en móvil → 2 en `sm` → 3 en `md` → 4 en `lg` → 5 en `2xl`. |
+| `ListingSkeleton` | `count?`, `columnsClass?` | Tarjetas grises animadas mientras carga. |
+| `ListingCard` | `listing: Listing` | `ListingPhoto` arriba; debajo, "Tipo en Lugar" + ★ en la misma fila, el título y las fechas en gris y "XX € noche". Toda la tarjeta es un `<Link>`. |
+| `ListingPhoto` | `src`, `alt`, `isGuestFavorite` | Foto cuadrada redondeada con la etiqueta "Favorito entre huéspedes" arriba a la izquierda, `FavoriteButton` arriba a la derecha y los puntos del carrusel abajo. |
+| `FavoriteButton` | `className?` | Corazón blanco con relleno semitransparente; se rellena de rosa al pulsarlo (`useState`). |
 | `MobileTabBar` | — | Fija abajo, solo en móvil (`md:hidden`). |
+| `Footer` | — | Franja gris inferior con copyright, idioma y moneda (solo escritorio). |
 
 ### 4.2 Catálogo (`/catalog`) — captura móvil
 
@@ -55,9 +61,9 @@ Lo que se ve en la captura: arriba, la flecha atrás, la píldora "Alojamientos 
 | Componente | Props | Layout |
 | --- | --- | --- |
 | `ResultsHeader` | `count: number`, `sortOrder: SortOrder`, `onSortChange` | Centrado en móvil (contador encima del selector); en escritorio, en una fila con `justify-between`. |
-| `SortSelect` | `value: SortOrder`, `onChange` | `<select>` con las opciones Ascendente y Descendente. |
-| `ListingGrid` / `ListingCard` | (los mismos de la Home) | 1 columna en móvil, 2 en escritorio. |
-| `MapPlaceholder` | — | Recuadro gris con el texto "Mapa". **Debajo** de la lista en móvil; **columna derecha** *sticky* en escritorio (lista 3/5, mapa 2/5). |
+| `SortSelect` | `value: SortOrder`, `onChange` | Píldora con icono de filtros y un `<select>`: precio de menor a mayor (ascendente) o de mayor a menor (descendente). |
+| `ListingGrid` / `ListingCard` | (los mismos de la Home) | 1 columna en móvil, 2–3 en escritorio. |
+| `MapPlaceholder` | — | Recuadro gris con el texto "Mapa". **Debajo** de la lista en móvil; **columna derecha** *sticky* en escritorio (lista ≈60 %, mapa ≈40 %). |
 
 *Decisión:* en Airbnb móvil el mapa queda por detrás de la lista. Aquí seguimos el brief y lo colocamos debajo de las tarjetas.
 
@@ -69,18 +75,21 @@ Lo que se ve en la captura: una foto a ancho completo con un contador "1 / 83" a
 | --- | --- | --- |
 | `BackLink` | `href: string`, `label: string` | Arriba a la izquierda, "← Volver al catálogo". |
 | `RoomView` | `roomId: string` | Carga los datos (con `useEffect`) y muestra `LoadingSpinner` o `RoomDetails`. |
-| `RoomDetails` | `room: Room` | Móvil: todo apilado. Escritorio: la galería arriba y debajo un grid de 3 columnas (información en 2/3 y `BookingCard` en 1/3). |
-| `PhotoGallery` | `photos: string[]`, `title: string` | Foto a ancho completo (4:3 en móvil, 16:9 en escritorio). Botones Anterior / Siguiente a los lados y contador "n / N" abajo a la derecha. |
-| `ListingHeader` | `title`, `rating`, `reviewCount`, `location` | Título grande y una fila con ★, reseñas y ubicación. |
-| `HostInfo` | `host: Host` | Avatar redondo + "Anfitrión: Nombre" + años como anfitrión. |
+| `RoomDetails` | `room: Room` | Móvil: la galería a ancho completo arriba y todo apilado. Escritorio: cabecera, galería en cuadrícula y debajo la información + `BookingCard` *sticky* (370px). |
+| `PhotoGallery` | `photos: string[]`, `title: string` | Foto principal (4:3 en móvil) con botones Anterior / Siguiente a los lados y contador "n / N" abajo a la derecha. En escritorio, mitad izquierda de la cuadrícula. |
+| `GalleryThumbnails` | `photos`, `activeIndex`, `onSelect` | Solo escritorio: cuadrícula 2×2 con las fotos 2–5 que cambia la foto activa, y el botón "Mostrar todas las fotos". |
+| `ListingHeader` | `title`, `rating`, `reviewCount`, `location` | Título grande + Compartir / Guardar (escritorio) y una fila con ★, reseñas y ubicación. |
+| `RoomSummary` | `heading`, `maxGuests`, `bedrooms`, `beds`, `baths` | "Alojamiento entero: …" + "4 viajeros · 2 dormitorios · …". |
+| `HostInfo` | `host: Host` | Avatar redondo (con medalla si es Superanfitrión) + "Anfitrión: Nombre" + años como anfitrión. |
+| `RoomHighlights` | `hostName: string` | Tres puntos destacados de icono + título + texto (llegada autónoma, zona de trabajo, cancelación). |
 | `AmenitiesGrid` | `amenities: Amenity[]` | Título y cuadrícula de icono + etiqueta: 1 columna en móvil, 2 en escritorio. |
-| `BookingCard` | `pricePerNight: number`, `maxGuests: number` | Tarjeta con sombra: precio, `GuestCounter` y CTA "Reservar". *Sticky* en escritorio. |
+| `BookingCard` | `pricePerNight: number`, `maxGuests: number` | Tarjeta con sombra: precio, casillas Llegada / Salida, `GuestCounter` y CTA "Reservar" con degradado rosa. *Sticky* en escritorio. |
 | `GuestCounter` | `value`, `min`, `max`, `onChange` | Botones − / + que se desactivan al llegar al mínimo o al máximo. |
 
 ## 5. Datos y tipos
 
 Los tipos están en `types/listing.ts`: `Category`, `Listing` (alojamiento), `Room` (habitación, que extiende `Listing`), `Host`, `Amenity` y `SortOrder`.
-Los datos simulados están en `lib/data.ts`. Las páginas simulan una API con `useEffect` y `setTimeout` (1 s) y muestran un indicador de carga mientras tanto.
+Los datos simulados están en `lib/data.ts`. Las fotos son de [Unsplash](https://unsplash.com) (licencia gratuita) y se cargan con `next/image`; los iconos de línea se basan en el set abierto Lucide (ISC). Las páginas simulan una API con `useEffect` y `setTimeout` (1 s) y muestran un indicador de carga mientras tanto.
 
 ## 6. Reglas que seguimos
 

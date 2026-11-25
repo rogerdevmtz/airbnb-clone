@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from "react";
 import CategoryBar from "@/components/CategoryBar";
+import Footer from "@/components/Footer";
 import ListingGrid from "@/components/ListingGrid";
-import LoadingSpinner from "@/components/LoadingSpinner";
+import ListingSkeleton from "@/components/ListingSkeleton";
 import MobileTabBar from "@/components/MobileTabBar";
 import Navbar from "@/components/Navbar";
 import { FAKE_LOADING_DELAY } from "@/lib/constants";
@@ -29,23 +30,20 @@ const HomePage = () => {
   const query = searchTerm.trim().toLowerCase();
   const visibleListings = listings.filter((listing) => {
     const matchesCategory = activeCategory === "all" || listing.categoryId === activeCategory;
-    const matchesSearch =
-      listing.title.toLowerCase().includes(query) ||
-      listing.location.toLowerCase().includes(query);
+    const matchesSearch = [listing.title, listing.heading, listing.location].some((text) =>
+      text.toLowerCase().includes(query),
+    );
     return matchesCategory && matchesSearch;
   });
 
   return (
     <>
       <Navbar searchValue={searchTerm} onSearchChange={setSearchTerm} />
-      <CategoryBar
-        categories={categories}
-        activeId={activeCategory}
-        onSelect={setActiveCategory}
-      />
-      <main className="mx-auto w-full max-w-7xl px-4 pt-6 pb-24 md:px-8">
-        {isLoading ? <LoadingSpinner /> : <ListingGrid listings={visibleListings} />}
+      <CategoryBar categories={categories} activeId={activeCategory} onSelect={setActiveCategory} />
+      <main className="mx-auto w-full max-w-[1760px] px-6 pt-6 pb-24 md:pb-12 lg:px-20">
+        {isLoading ? <ListingSkeleton /> : <ListingGrid listings={visibleListings} />}
       </main>
+      <Footer />
       <MobileTabBar />
     </>
   );

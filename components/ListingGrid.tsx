@@ -8,15 +8,15 @@ interface ListingGridProps {
   columnsClass?: string;
 }
 
-const ListingGrid = ({
-  listings,
-  columnsClass = "md:grid-cols-3 lg:grid-cols-4",
-}: ListingGridProps) => {
+export const defaultColumns = "sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5";
+
+const ListingGrid = ({ listings, columnsClass = defaultColumns }: ListingGridProps) => {
   if (listings.length === 0) {
     return (
-      <p className="py-16 text-center text-gray-600">
-        No hay alojamientos que coincidan con tu búsqueda.
-      </p>
+      <div className="py-20 text-center">
+        <p className="text-lg font-semibold">No hay coincidencias exactas</p>
+        <p className="text-gray-500">Prueba a cambiar la búsqueda o la categoría.</p>
+      </div>
     );
   }
 
