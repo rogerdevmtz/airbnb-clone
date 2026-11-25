@@ -1,0 +1,9 @@
+@import "tailwindcss";
+
+/* Oculta la barra de scroll en la fila horizontal de categorías. */
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
