@@ -13,7 +13,7 @@ interface CategoryBarProps {
 const CategoryBar = ({ categories, activeId, onSelect }: CategoryBarProps) => {
   return (
     <div className="sticky top-[69px] z-20 bg-white shadow-[0_1px_0_rgba(0,0,0,0.08)] md:top-[89px]">
-      <div className="mx-auto flex max-w-[1760px] items-center gap-6 px-6 pt-4 lg:px-20">
+      <div className="mx-auto flex max-w-[1760px] items-center gap-6 px-6 pt-4 lg:px-10 xl:px-20">
         <div className="no-scrollbar flex flex-1 gap-8 overflow-x-auto md:gap-10">
           {categories.map((category) => (
             <CategoryButton

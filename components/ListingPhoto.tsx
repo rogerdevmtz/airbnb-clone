@@ -21,7 +21,7 @@ const ListingPhoto = ({ src, alt, isGuestFavorite }: ListingPhotoProps) => {
         className="object-cover transition duration-300 group-hover:scale-105"
       />
       {isGuestFavorite && (
-        <span className="absolute top-3 left-3 rounded-full bg-white px-3 py-1 text-xs font-semibold shadow">
+        <span className="absolute top-3 left-3 max-w-[calc(100%-4rem)] truncate rounded-full bg-white px-2.5 py-1 text-xs font-semibold shadow">
           Favorito entre huéspedes
         </span>
       )}

@@ -40,7 +40,7 @@ const HomePage = () => {
     <>
       <Navbar searchValue={searchTerm} onSearchChange={setSearchTerm} />
       <CategoryBar categories={categories} activeId={activeCategory} onSelect={setActiveCategory} />
-      <main className="mx-auto w-full max-w-[1760px] px-6 pt-6 pb-24 md:pb-12 lg:px-20">
+      <main className="mx-auto w-full max-w-[1760px] px-6 pt-6 pb-24 md:pb-12 lg:px-10 xl:px-20">
         {isLoading ? <ListingSkeleton /> : <ListingGrid listings={visibleListings} />}
       </main>
       <Footer />

@@ -17,7 +17,7 @@ const Navbar = ({ searchValue, onSearchChange }: NavbarProps) => {
 
   return (
     <header className="sticky top-0 z-30 border-b border-gray-200 bg-white">
-      <nav className="mx-auto flex max-w-[1760px] items-center gap-4 px-6 py-3 md:justify-between md:py-4 lg:px-20">
+      <nav className="mx-auto flex max-w-[1760px] items-center gap-4 px-6 py-3 md:justify-between md:py-4 lg:px-10 xl:px-20">
         <span className="hidden md:block">
           <Logo />
         </span>
